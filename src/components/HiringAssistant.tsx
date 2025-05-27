@@ -4,7 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Send, Bot, User, FileText, Award, ChevronDown, ChevronUp } from 'lucide-react';
+import { Send, Bot, User, FileText, Award, ChevronDown, ChevronUp, Sparkles } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface Message {
@@ -134,7 +134,6 @@ const HiringAssistant = () => {
       }
     });
 
-    // If no specific questions found, add general questions
     if (questions.length === 0) {
       questions.push(
         "Describe a challenging technical problem you've solved recently.",
@@ -143,7 +142,7 @@ const HiringAssistant = () => {
       );
     }
 
-    return questions.slice(0, 5); // Limit to 5 questions
+    return questions.slice(0, 5);
   };
 
   const processUserInput = async (input: string) => {
@@ -153,7 +152,6 @@ const HiringAssistant = () => {
     setCurrentInput('');
     setIsLoading(true);
 
-    // Check for conversation-ending keywords
     const endKeywords = ['bye', 'goodbye', 'quit', 'exit', 'end', 'finish', 'stop'];
     if (endKeywords.some(keyword => input.toLowerCase().includes(keyword))) {
       setTimeout(() => {
@@ -259,20 +257,23 @@ const HiringAssistant = () => {
   };
 
   return (
-    <div className="max-w-6xl mx-auto flex gap-6">
+    <div className="max-w-6xl mx-auto flex gap-6 animate-fade-in">
       {/* Main Chat Interface */}
       <div className="flex-1">
-        <Card className="h-[600px] flex flex-col shadow-2xl">
-          <CardHeader className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-t-lg">
-            <CardTitle className="flex items-center gap-2 text-xl">
-              <Bot className="w-6 h-6" />
+        <Card className="h-[600px] flex flex-col shadow-2xl backdrop-blur-sm bg-white/10 border-white/20 animate-scale-in">
+          <CardHeader className="bg-gradient-to-r from-blue-600/90 via-purple-600/90 to-indigo-600/90 text-white rounded-t-lg backdrop-blur-sm border-b border-white/20">
+            <CardTitle className="flex items-center gap-3 text-xl">
+              <div className="relative">
+                <Bot className="w-7 h-7" />
+                <Sparkles className="w-3 h-3 absolute -top-1 -right-1 text-yellow-300 animate-pulse" />
+              </div>
               TalentScout Hiring Assistant
               <div className="ml-auto flex gap-2">
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={scrollToTop}
-                  className="text-white hover:bg-white/20"
+                  className="text-white hover:bg-white/20 transition-all duration-300 hover:scale-105"
                 >
                   <FileText className="w-4 h-4" />
                   Scroll to Top
@@ -281,53 +282,54 @@ const HiringAssistant = () => {
             </CardTitle>
           </CardHeader>
 
-          <CardContent className="flex-1 flex flex-col p-0">
+          <CardContent className="flex-1 flex flex-col p-0 bg-gradient-to-b from-gray-50/90 to-white/90 backdrop-blur-sm">
             <ScrollArea className="flex-1 p-4" ref={scrollAreaRef}>
               <div className="space-y-4">
-                {messages.map((message) => (
+                {messages.map((message, index) => (
                   <div
                     key={message.id}
-                    className={`flex items-start gap-3 ${
+                    className={`flex items-start gap-3 animate-fade-in ${
                       message.type === 'user' ? 'flex-row-reverse' : ''
                     }`}
+                    style={{ animationDelay: `${index * 0.1}s` }}
                   >
                     <div
-                      className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                      className={`w-10 h-10 rounded-full flex items-center justify-center shadow-lg transition-all duration-300 hover:scale-110 ${
                         message.type === 'bot'
-                          ? 'bg-blue-600 text-white'
-                          : 'bg-gray-600 text-white'
+                          ? 'bg-gradient-to-r from-blue-500 to-purple-500 text-white'
+                          : 'bg-gradient-to-r from-gray-600 to-gray-700 text-white'
                       }`}
                     >
                       {message.type === 'bot' ? (
-                        <Bot className="w-4 h-4" />
+                        <Bot className="w-5 h-5" />
                       ) : (
-                        <User className="w-4 h-4" />
+                        <User className="w-5 h-5" />
                       )}
                     </div>
                     <div
-                      className={`max-w-[70%] p-3 rounded-lg ${
+                      className={`max-w-[75%] p-4 rounded-2xl shadow-lg transition-all duration-300 hover:shadow-xl ${
                         message.type === 'bot'
-                          ? 'bg-gray-100 text-gray-800'
-                          : 'bg-blue-600 text-white'
+                          ? 'bg-gradient-to-r from-white to-gray-50 text-gray-800 border border-gray-200'
+                          : 'bg-gradient-to-r from-blue-500 to-purple-500 text-white'
                       }`}
                     >
                       <p className="text-sm leading-relaxed">{message.content}</p>
-                      <span className="text-xs opacity-70 mt-1 block">
+                      <span className="text-xs opacity-70 mt-2 block">
                         {message.timestamp.toLocaleTimeString()}
                       </span>
                     </div>
                   </div>
                 ))}
                 {isLoading && (
-                  <div className="flex items-start gap-3">
-                    <div className="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center">
-                      <Bot className="w-4 h-4" />
+                  <div className="flex items-start gap-3 animate-fade-in">
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 text-white flex items-center justify-center shadow-lg">
+                      <Bot className="w-5 h-5" />
                     </div>
-                    <div className="bg-gray-100 p-3 rounded-lg">
+                    <div className="bg-gradient-to-r from-white to-gray-50 p-4 rounded-2xl shadow-lg border border-gray-200">
                       <div className="flex gap-1">
-                        <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
-                        <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                        <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                        <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce"></div>
+                        <div className="w-2 h-2 bg-purple-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                        <div className="w-2 h-2 bg-indigo-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
                       </div>
                     </div>
                   </div>
@@ -336,16 +338,20 @@ const HiringAssistant = () => {
               </div>
             </ScrollArea>
 
-            <div className="border-t p-4 bg-gray-50">
-              <form onSubmit={handleSubmit} className="flex gap-2">
+            <div className="border-t border-white/20 p-4 bg-white/50 backdrop-blur-sm rounded-b-lg">
+              <form onSubmit={handleSubmit} className="flex gap-3">
                 <Input
                   value={currentInput}
                   onChange={(e) => setCurrentInput(e.target.value)}
                   placeholder="Type your message..."
                   disabled={isLoading}
-                  className="flex-1"
+                  className="flex-1 bg-white/90 border-white/30 focus:border-blue-400 transition-all duration-300 rounded-xl shadow-sm"
                 />
-                <Button type="submit" disabled={isLoading || !currentInput.trim()}>
+                <Button 
+                  type="submit" 
+                  disabled={isLoading || !currentInput.trim()}
+                  className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 transition-all duration-300 hover:scale-105 rounded-xl shadow-lg"
+                >
                   <Send className="w-4 h-4" />
                 </Button>
               </form>
@@ -356,18 +362,19 @@ const HiringAssistant = () => {
 
       {/* Candidate Info Sidebar */}
       {Object.keys(candidateInfo).length > 0 && (
-        <div className="w-80">
-          <Card className="sticky top-4">
-            <CardHeader className="pb-3">
+        <div className="w-80 animate-slide-in-right">
+          <Card className="sticky top-4 backdrop-blur-sm bg-white/10 border-white/20 shadow-xl">
+            <CardHeader className="pb-3 bg-gradient-to-r from-purple-600/90 to-pink-600/90 text-white rounded-t-lg">
               <CardTitle className="flex items-center justify-between text-lg">
                 <div className="flex items-center gap-2">
                   <Award className="w-5 h-5" />
-                  Candidate Info
+                  Candidate Profile
                 </div>
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={() => setShowCandidateInfo(!showCandidateInfo)}
+                  className="text-white hover:bg-white/20 transition-all duration-300 hover:scale-105"
                 >
                   {showCandidateInfo ? (
                     <ChevronUp className="w-4 h-4" />
@@ -378,50 +385,54 @@ const HiringAssistant = () => {
               </CardTitle>
             </CardHeader>
             {showCandidateInfo && (
-              <CardContent className="pt-0">
-                <div className="space-y-3">
+              <CardContent className="pt-4 bg-white/90 backdrop-blur-sm rounded-b-lg">
+                <div className="space-y-4">
                   {candidateInfo.fullName && (
-                    <div>
-                      <label className="text-sm font-medium text-gray-600">Full Name</label>
-                      <p className="text-gray-900 text-sm">{candidateInfo.fullName}</p>
+                    <div className="animate-fade-in">
+                      <label className="text-sm font-semibold text-gray-700 block mb-1">Full Name</label>
+                      <p className="text-gray-900 text-sm bg-gray-50 p-2 rounded-lg">{candidateInfo.fullName}</p>
                     </div>
                   )}
                   {candidateInfo.email && (
-                    <div>
-                      <label className="text-sm font-medium text-gray-600">Email</label>
-                      <p className="text-gray-900 text-sm">{candidateInfo.email}</p>
+                    <div className="animate-fade-in">
+                      <label className="text-sm font-semibold text-gray-700 block mb-1">Email</label>
+                      <p className="text-gray-900 text-sm bg-gray-50 p-2 rounded-lg">{candidateInfo.email}</p>
                     </div>
                   )}
                   {candidateInfo.phone && (
-                    <div>
-                      <label className="text-sm font-medium text-gray-600">Phone</label>
-                      <p className="text-gray-900 text-sm">{candidateInfo.phone}</p>
+                    <div className="animate-fade-in">
+                      <label className="text-sm font-semibold text-gray-700 block mb-1">Phone</label>
+                      <p className="text-gray-900 text-sm bg-gray-50 p-2 rounded-lg">{candidateInfo.phone}</p>
                     </div>
                   )}
                   {candidateInfo.experience && (
-                    <div>
-                      <label className="text-sm font-medium text-gray-600">Experience</label>
-                      <p className="text-gray-900 text-sm">{candidateInfo.experience} years</p>
+                    <div className="animate-fade-in">
+                      <label className="text-sm font-semibold text-gray-700 block mb-1">Experience</label>
+                      <p className="text-gray-900 text-sm bg-gray-50 p-2 rounded-lg">{candidateInfo.experience} years</p>
                     </div>
                   )}
                   {candidateInfo.position && (
-                    <div>
-                      <label className="text-sm font-medium text-gray-600">Desired Position</label>
-                      <p className="text-gray-900 text-sm">{candidateInfo.position}</p>
+                    <div className="animate-fade-in">
+                      <label className="text-sm font-semibold text-gray-700 block mb-1">Desired Position</label>
+                      <p className="text-gray-900 text-sm bg-gray-50 p-2 rounded-lg">{candidateInfo.position}</p>
                     </div>
                   )}
                   {candidateInfo.location && (
-                    <div>
-                      <label className="text-sm font-medium text-gray-600">Location</label>
-                      <p className="text-gray-900 text-sm">{candidateInfo.location}</p>
+                    <div className="animate-fade-in">
+                      <label className="text-sm font-semibold text-gray-700 block mb-1">Location</label>
+                      <p className="text-gray-900 text-sm bg-gray-50 p-2 rounded-lg">{candidateInfo.location}</p>
                     </div>
                   )}
                   {candidateInfo.techStack && candidateInfo.techStack.length > 0 && (
-                    <div>
-                      <label className="text-sm font-medium text-gray-600 block mb-2">Tech Stack</label>
-                      <div className="flex flex-wrap gap-1">
+                    <div className="animate-fade-in">
+                      <label className="text-sm font-semibold text-gray-700 block mb-2">Tech Stack</label>
+                      <div className="flex flex-wrap gap-2">
                         {candidateInfo.techStack.map((tech, index) => (
-                          <Badge key={index} variant="secondary" className="text-xs">
+                          <Badge 
+                            key={index} 
+                            variant="secondary" 
+                            className="text-xs bg-gradient-to-r from-blue-100 to-purple-100 text-blue-800 border border-blue-200 hover:scale-105 transition-transform duration-200"
+                          >
                             {tech}
                           </Badge>
                         ))}
