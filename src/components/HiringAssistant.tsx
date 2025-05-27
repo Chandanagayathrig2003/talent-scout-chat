@@ -1,11 +1,10 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Send, Bot, User, FileText, Award } from 'lucide-react';
+import { Send, Bot, User, FileText, Award, ChevronDown, ChevronUp } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface Message {
@@ -33,6 +32,7 @@ const HiringAssistant = () => {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [techQuestions, setTechQuestions] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [showCandidateInfo, setShowCandidateInfo] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
 
@@ -259,160 +259,180 @@ const HiringAssistant = () => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto">
-      <Card className="h-[600px] flex flex-col shadow-2xl">
-        <CardHeader className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-t-lg">
-          <CardTitle className="flex items-center gap-2 text-xl">
-            <Bot className="w-6 h-6" />
-            TalentScout Hiring Assistant
-            <div className="ml-auto flex gap-2">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={scrollToTop}
-                className="text-white hover:bg-white/20"
-              >
-                <FileText className="w-4 h-4" />
-                Scroll to Top
-              </Button>
-            </div>
-          </CardTitle>
-        </CardHeader>
-
-        <CardContent className="flex-1 flex flex-col p-0">
-          <ScrollArea className="flex-1 p-4" ref={scrollAreaRef}>
-            <div className="space-y-4">
-              {messages.map((message) => (
-                <div
-                  key={message.id}
-                  className={`flex items-start gap-3 ${
-                    message.type === 'user' ? 'flex-row-reverse' : ''
-                  }`}
+    <div className="max-w-6xl mx-auto flex gap-6">
+      {/* Main Chat Interface */}
+      <div className="flex-1">
+        <Card className="h-[600px] flex flex-col shadow-2xl">
+          <CardHeader className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-t-lg">
+            <CardTitle className="flex items-center gap-2 text-xl">
+              <Bot className="w-6 h-6" />
+              TalentScout Hiring Assistant
+              <div className="ml-auto flex gap-2">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={scrollToTop}
+                  className="text-white hover:bg-white/20"
                 >
-                  <div
-                    className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                      message.type === 'bot'
-                        ? 'bg-blue-600 text-white'
-                        : 'bg-gray-600 text-white'
-                    }`}
-                  >
-                    {message.type === 'bot' ? (
-                      <Bot className="w-4 h-4" />
-                    ) : (
-                      <User className="w-4 h-4" />
-                    )}
-                  </div>
-                  <div
-                    className={`max-w-[70%] p-3 rounded-lg ${
-                      message.type === 'bot'
-                        ? 'bg-gray-100 text-gray-800'
-                        : 'bg-blue-600 text-white'
-                    }`}
-                  >
-                    <p className="text-sm leading-relaxed">{message.content}</p>
-                    <span className="text-xs opacity-70 mt-1 block">
-                      {message.timestamp.toLocaleTimeString()}
-                    </span>
-                  </div>
-                </div>
-              ))}
-              {isLoading && (
-                <div className="flex items-start gap-3">
-                  <div className="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center">
-                    <Bot className="w-4 h-4" />
-                  </div>
-                  <div className="bg-gray-100 p-3 rounded-lg">
-                    <div className="flex gap-1">
-                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
-                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
-                    </div>
-                  </div>
-                </div>
-              )}
-              <div ref={messagesEndRef} />
-            </div>
-          </ScrollArea>
-
-          <div className="border-t p-4 bg-gray-50">
-            <form onSubmit={handleSubmit} className="flex gap-2">
-              <Input
-                value={currentInput}
-                onChange={(e) => setCurrentInput(e.target.value)}
-                placeholder="Type your message..."
-                disabled={isLoading}
-                className="flex-1"
-              />
-              <Button type="submit" disabled={isLoading || !currentInput.trim()}>
-                <Send className="w-4 h-4" />
-              </Button>
-            </form>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Candidate Info Summary */}
-      {Object.keys(candidateInfo).length > 0 && (
-        <Card className="mt-6">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Award className="w-5 h-5" />
-              Candidate Information Summary
+                  <FileText className="w-4 h-4" />
+                  Scroll to Top
+                </Button>
+              </div>
             </CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {candidateInfo.fullName && (
-                <div>
-                  <label className="text-sm font-medium text-gray-600">Full Name</label>
-                  <p className="text-gray-900">{candidateInfo.fullName}</p>
-                </div>
-              )}
-              {candidateInfo.email && (
-                <div>
-                  <label className="text-sm font-medium text-gray-600">Email</label>
-                  <p className="text-gray-900">{candidateInfo.email}</p>
-                </div>
-              )}
-              {candidateInfo.phone && (
-                <div>
-                  <label className="text-sm font-medium text-gray-600">Phone</label>
-                  <p className="text-gray-900">{candidateInfo.phone}</p>
-                </div>
-              )}
-              {candidateInfo.experience && (
-                <div>
-                  <label className="text-sm font-medium text-gray-600">Experience</label>
-                  <p className="text-gray-900">{candidateInfo.experience} years</p>
-                </div>
-              )}
-              {candidateInfo.position && (
-                <div>
-                  <label className="text-sm font-medium text-gray-600">Desired Position</label>
-                  <p className="text-gray-900">{candidateInfo.position}</p>
-                </div>
-              )}
-              {candidateInfo.location && (
-                <div>
-                  <label className="text-sm font-medium text-gray-600">Location</label>
-                  <p className="text-gray-900">{candidateInfo.location}</p>
-                </div>
-              )}
-            </div>
-            {candidateInfo.techStack && candidateInfo.techStack.length > 0 && (
-              <div className="mt-4">
-                <label className="text-sm font-medium text-gray-600 block mb-2">Tech Stack</label>
-                <div className="flex flex-wrap gap-2">
-                  {candidateInfo.techStack.map((tech, index) => (
-                    <Badge key={index} variant="secondary">
-                      {tech}
-                    </Badge>
-                  ))}
-                </div>
+
+          <CardContent className="flex-1 flex flex-col p-0">
+            <ScrollArea className="flex-1 p-4" ref={scrollAreaRef}>
+              <div className="space-y-4">
+                {messages.map((message) => (
+                  <div
+                    key={message.id}
+                    className={`flex items-start gap-3 ${
+                      message.type === 'user' ? 'flex-row-reverse' : ''
+                    }`}
+                  >
+                    <div
+                      className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                        message.type === 'bot'
+                          ? 'bg-blue-600 text-white'
+                          : 'bg-gray-600 text-white'
+                      }`}
+                    >
+                      {message.type === 'bot' ? (
+                        <Bot className="w-4 h-4" />
+                      ) : (
+                        <User className="w-4 h-4" />
+                      )}
+                    </div>
+                    <div
+                      className={`max-w-[70%] p-3 rounded-lg ${
+                        message.type === 'bot'
+                          ? 'bg-gray-100 text-gray-800'
+                          : 'bg-blue-600 text-white'
+                      }`}
+                    >
+                      <p className="text-sm leading-relaxed">{message.content}</p>
+                      <span className="text-xs opacity-70 mt-1 block">
+                        {message.timestamp.toLocaleTimeString()}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+                {isLoading && (
+                  <div className="flex items-start gap-3">
+                    <div className="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center">
+                      <Bot className="w-4 h-4" />
+                    </div>
+                    <div className="bg-gray-100 p-3 rounded-lg">
+                      <div className="flex gap-1">
+                        <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
+                        <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                        <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+                <div ref={messagesEndRef} />
               </div>
-            )}
+            </ScrollArea>
+
+            <div className="border-t p-4 bg-gray-50">
+              <form onSubmit={handleSubmit} className="flex gap-2">
+                <Input
+                  value={currentInput}
+                  onChange={(e) => setCurrentInput(e.target.value)}
+                  placeholder="Type your message..."
+                  disabled={isLoading}
+                  className="flex-1"
+                />
+                <Button type="submit" disabled={isLoading || !currentInput.trim()}>
+                  <Send className="w-4 h-4" />
+                </Button>
+              </form>
+            </div>
           </CardContent>
         </Card>
+      </div>
+
+      {/* Candidate Info Sidebar */}
+      {Object.keys(candidateInfo).length > 0 && (
+        <div className="w-80">
+          <Card className="sticky top-4">
+            <CardHeader className="pb-3">
+              <CardTitle className="flex items-center justify-between text-lg">
+                <div className="flex items-center gap-2">
+                  <Award className="w-5 h-5" />
+                  Candidate Info
+                </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setShowCandidateInfo(!showCandidateInfo)}
+                >
+                  {showCandidateInfo ? (
+                    <ChevronUp className="w-4 h-4" />
+                  ) : (
+                    <ChevronDown className="w-4 h-4" />
+                  )}
+                </Button>
+              </CardTitle>
+            </CardHeader>
+            {showCandidateInfo && (
+              <CardContent className="pt-0">
+                <div className="space-y-3">
+                  {candidateInfo.fullName && (
+                    <div>
+                      <label className="text-sm font-medium text-gray-600">Full Name</label>
+                      <p className="text-gray-900 text-sm">{candidateInfo.fullName}</p>
+                    </div>
+                  )}
+                  {candidateInfo.email && (
+                    <div>
+                      <label className="text-sm font-medium text-gray-600">Email</label>
+                      <p className="text-gray-900 text-sm">{candidateInfo.email}</p>
+                    </div>
+                  )}
+                  {candidateInfo.phone && (
+                    <div>
+                      <label className="text-sm font-medium text-gray-600">Phone</label>
+                      <p className="text-gray-900 text-sm">{candidateInfo.phone}</p>
+                    </div>
+                  )}
+                  {candidateInfo.experience && (
+                    <div>
+                      <label className="text-sm font-medium text-gray-600">Experience</label>
+                      <p className="text-gray-900 text-sm">{candidateInfo.experience} years</p>
+                    </div>
+                  )}
+                  {candidateInfo.position && (
+                    <div>
+                      <label className="text-sm font-medium text-gray-600">Desired Position</label>
+                      <p className="text-gray-900 text-sm">{candidateInfo.position}</p>
+                    </div>
+                  )}
+                  {candidateInfo.location && (
+                    <div>
+                      <label className="text-sm font-medium text-gray-600">Location</label>
+                      <p className="text-gray-900 text-sm">{candidateInfo.location}</p>
+                    </div>
+                  )}
+                  {candidateInfo.techStack && candidateInfo.techStack.length > 0 && (
+                    <div>
+                      <label className="text-sm font-medium text-gray-600 block mb-2">Tech Stack</label>
+                      <div className="flex flex-wrap gap-1">
+                        {candidateInfo.techStack.map((tech, index) => (
+                          <Badge key={index} variant="secondary" className="text-xs">
+                            {tech}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            )}
+          </Card>
+        </div>
       )}
     </div>
   );
